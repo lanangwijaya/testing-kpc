@@ -4,120 +4,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lua Deobfuscator Analyzer</title>
+
+<title>Lua Auto Beautifier</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
-    background:#090909;
+    background:#080808;
     color:#eee;
-    font-family:Arial,sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
 }
+
 header{
-    padding:20px 16px;
-    border-bottom:1px solid #242424;
+    padding:18px 15px;
     background:#0d0d0d;
+    border-bottom:1px solid #252525;
 }
-.logo{
+
+.title{
     font-size:21px;
-    font-weight:bold;
-    letter-spacing:1px;
+    font-weight:700;
+    letter-spacing:.5px;
 }
-.sub{
+
+.subtitle{
     color:#777;
     font-size:12px;
     margin-top:5px;
 }
-.wrap{
-    max-width:1000px;
-    margin:auto;
-    padding:16px;
-}
-.toolbar{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-bottom:12px;
-}
-button,.file{
-    border:1px solid #333;
-    background:#151515;
-    color:#eee;
-    padding:11px 14px;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:13px;
-}
-button:hover,.file:hover{
-    background:#202020;
-}
-.primary{
-    background:#eee;
-    color:#000;
-    border-color:#eee;
-}
-input[type=file]{display:none}
-textarea{
+
+.container{
     width:100%;
-    min-height:430px;
-    resize:vertical;
-    background:#050505;
-    color:#ddd;
-    border:1px solid #292929;
-    border-radius:10px;
-    padding:15px;
-    outline:none;
-    font-family:Consolas,monospace;
-    font-size:13px;
-    line-height:1.55;
-}
-textarea:focus{
-    border-color:#555;
-}
-.panel{
-    margin-top:14px;
-    border:1px solid #252525;
-    border-radius:10px;
-    background:#0d0d0d;
+    max-width:1100px;
+    margin:auto;
     padding:14px;
 }
-.panel h3{
-    margin:0 0 10px;
-    font-size:14px;
+
+.toolbar{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
 }
-#status{
-    color:#888;
-    font-size:12px;
+
+button,
+.upload{
+    min-height:42px;
+    padding:10px 15px;
+    border-radius:8px;
+    border:1px solid #303030;
+    background:#151515;
+    color:#eee;
+    font-size:13px;
+    cursor:pointer;
 }
-.result{
-    white-space:pre-wrap;
-    font-family:Consolas,monospace;
+
+button:hover,
+.upload:hover{
+    background:#202020;
+}
+
+.main{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.box{
+    background:#0d0d0d;
+    border:1px solid #272727;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.box-title{
+    height:42px;
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    border-bottom:1px solid #252525;
     font-size:12px;
-    color:#bbb;
+    color:#aaa;
+}
+
+textarea{
+    width:100%;
+    height:560px;
+    display:block;
+    resize:none;
+    border:0;
+    outline:0;
+    padding:14px;
+    background:#050505;
+    color:#ddd;
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+    font-size:13px;
     line-height:1.6;
+    tab-size:4;
 }
-.badge{
-    display:inline-block;
-    border:1px solid #333;
-    padding:5px 8px;
-    border-radius:6px;
-    margin:3px;
+
+textarea::placeholder{
+    color:#555;
+}
+
+.primary{
+    background:#eee;
+    color:#050505;
+    border-color:#eee;
+    font-weight:bold;
+}
+
+.info{
+    margin-top:10px;
+    color:#666;
     font-size:11px;
+    text-align:center;
 }
-.warn{
-    border-color:#684f00;
-    color:#d9b84c;
+
+input[type=file]{
+    display:none;
 }
-.ok{
-    border-color:#315b3a;
-    color:#8fd19e;
-}
-@media(max-width:600px){
-    header{padding:16px 12px}
-    .wrap{padding:12px}
-    textarea{min-height:350px;font-size:12px}
-    button,.file{flex:1}
+
+@media(max-width:700px){
+
+    .main{
+        grid-template-columns:1fr;
+    }
+
+    textarea{
+        height:390px;
+        font-size:12px;
+    }
+
+    .toolbar{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+    }
+
+    button,
+    .upload{
+        width:100%;
+        text-align:center;
+    }
+
+    .primary{
+        grid-column:span 2;
+    }
 }
 </style>
 
@@ -126,411 +165,1149 @@ textarea:focus{
 <body>
 
 <header>
-    <div class="logo">LUA DEOBFUSCATOR</div>
-    <div class="sub">Beautify • Analyze • String / Decoder Detector</div>
+    <div class="title">LUA AUTO BEAUTIFIER</div>
+    <div class="subtitle">
+        Rapikan script Lua secara otomatis
+    </div>
 </header>
 
-<div class="wrap">
+<div class="container">
 
 ```
 <div class="toolbar">
 
-    <label class="file">
+    <label class="upload">
         📂 Upload Lua
-        <input id="fileInput" type="file" accept=".lua,.txt">
+        <input
+            type="file"
+            id="fileInput"
+            accept=".lua,.txt"
+        >
     </label>
 
-    <button onclick="beautify()">✨ Beautify</button>
+    <button onclick="formatCode()">
+        ✨ Beautify
+    </button>
 
-    <button onclick="analyze()">🔎 Analyze</button>
+    <button onclick="copyOutput()">
+        📋 Copy
+    </button>
 
-    <button onclick="clearAll()">🗑 Clear</button>
+    <button onclick="clearCode()">
+        🗑 Clear
+    </button>
 
-    <button class="primary" onclick="downloadLua()">⬇ Download Lua</button>
+    <button class="primary" onclick="downloadLua()">
+        ⬇ Download Lua
+    </button>
 
 </div>
 
-<textarea id="code" placeholder="Paste script Lua di sini..."></textarea>
 
-<div class="panel">
-    <h3>ANALYSIS</h3>
-    <div id="status">Belum ada analisis.</div>
-    <div id="result" class="result"></div>
+<div class="main">
+
+    <div class="box">
+
+        <div class="box-title">
+            INPUT — SCRIPT LUA
+        </div>
+
+        <textarea
+            id="input"
+            spellcheck="false"
+            placeholder="Paste script Lua kamu di sini..."
+        ></textarea>
+
+    </div>
+
+
+    <div class="box">
+
+        <div class="box-title">
+            OUTPUT — HASIL RAPI
+        </div>
+
+        <textarea
+            id="output"
+            spellcheck="false"
+            readonly
+            placeholder="Hasil beautify akan muncul di sini..."
+        ></textarea>
+
+    </div>
+
+</div>
+
+<div class="info">
+    Semua proses berjalan langsung di browser HP — tidak menggunakan server.
 </div>
 ```
 
 </div>
 
 <script>
-const codeBox = document.getElementById("code");
-const result = document.getElementById("result");
-const statusBox = document.getElementById("status");
-const fileInput = document.getElementById("fileInput");
 
-/* =========================
-   UPLOAD FILE
-========================= */
+/*
+==================================================
+ LUA AUTO BEAUTIFIER
+==================================================
+*/
 
-fileInput.addEventListener("change", function(){
+const input =
+    document.getElementById("input");
 
-    const file = this.files[0];
+const output =
+    document.getElementById("output");
 
-    if(!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function(e){
-
-        codeBox.value = e.target.result;
-
-        statusBox.textContent =
-            "Loaded: " + file.name +
-            " (" + Math.round(file.size/1024) + " KB)";
-
-        result.textContent = "";
-
-    };
-
-    reader.readAsText(file);
-});
+const fileInput =
+    document.getElementById("fileInput");
 
 
-/* =========================
-   BASIC LUA BEAUTIFIER
-========================= */
+/*
+==================================================
+ UPLOAD
+==================================================
+*/
 
-function beautify(){
+fileInput.addEventListener(
+    "change",
+    function(){
 
-    let code = codeBox.value;
+        const file =
+            this.files[0];
 
-    if(!code.trim()){
-        alert("Masukkan script Lua terlebih dahulu.");
-        return;
+        if(!file) return;
+
+        const reader =
+            new FileReader();
+
+        reader.onload =
+            function(event){
+
+                input.value =
+                    event.target.result;
+
+                output.value = "";
+
+            };
+
+        reader.readAsText(file);
+
     }
+);
 
-    let lines = code
-        .replace(/\r/g,"")
-        .split("\n");
 
-    let indent = 0;
-    let output = [];
+/*
+==================================================
+ TOKENIZER
+==================================================
 
-    const decrease = /^(end|until|else|elseif)\b/i;
+Tujuan:
+- menjaga string agar tidak rusak
+- menjaga komentar
+- memisahkan simbol Lua
+==================================================
+*/
 
-    const increase =
-        /\b(then|do|function|repeat)\s*$/i;
+function tokenizeLua(code){
 
-    for(let raw of lines){
+    const tokens = [];
 
-        let line = raw.trim();
+    let i = 0;
 
-        if(!line){
-            output.push("");
+    while(i < code.length){
+
+        const char = code[i];
+
+        /*
+        STRING
+        */
+
+        if(
+            char === '"' ||
+            char === "'"
+        ){
+
+            const quote = char;
+
+            let value = quote;
+
+            i++;
+
+            while(i < code.length){
+
+                value += code[i];
+
+                if(
+                    code[i] === "\\" &&
+                    i + 1 < code.length
+                ){
+
+                    i++;
+
+                    value += code[i];
+
+                }
+                else if(
+                    code[i] === quote
+                ){
+
+                    i++;
+
+                    break;
+
+                }
+
+                i++;
+
+            }
+
+            tokens.push({
+                type:"string",
+                value:value
+            });
+
             continue;
         }
 
-        if(decrease.test(line)){
-            indent = Math.max(0,indent-1);
+
+        /*
+        LONG STRING
+        */
+
+        if(
+            code.substring(i,i+2) === "[["
+        ){
+
+            const end =
+                code.indexOf(
+                    "]]",
+                    i + 2
+                );
+
+            if(end !== -1){
+
+                tokens.push({
+                    type:"string",
+                    value:
+                        code.substring(
+                            i,
+                            end + 2
+                        )
+                });
+
+                i = end + 2;
+
+                continue;
+            }
         }
 
-        output.push("    ".repeat(indent) + line);
 
-        if(/^else\b/i.test(line) ||
-           /^elseif\b/i.test(line)){
-            indent++;
-        }
-        else if(increase.test(line)){
-            indent++;
+        /*
+        COMMENT
+        */
+
+        if(
+            code.substring(i,i+2) === "--"
+        ){
+
+            /*
+            LONG COMMENT
+            */
+
+            if(
+                code.substring(i,i+4) === "--[["
+            ){
+
+                const end =
+                    code.indexOf(
+                        "]]",
+                        i + 4
+                    );
+
+                if(end !== -1){
+
+                    tokens.push({
+                        type:"comment",
+                        value:
+                            code.substring(
+                                i,
+                                end + 2
+                            )
+                    });
+
+                    i = end + 2;
+
+                    continue;
+                }
+
+            }
+
+
+            /*
+            SINGLE COMMENT
+            */
+
+            let end = i;
+
+            while(
+                end < code.length &&
+                code[end] !== "\n"
+            ){
+
+                end++;
+
+            }
+
+            tokens.push({
+                type:"comment",
+                value:
+                    code.substring(
+                        i,
+                        end
+                    )
+            });
+
+            i = end;
+
+            continue;
         }
 
-        if(/\bend\s*[,;]?\s*$/i.test(line) &&
-           !/^end\b/i.test(line)){
-            indent = Math.max(0,indent-1);
+
+        /*
+        WHITESPACE
+        */
+
+        if(/\s/.test(char)){
+
+            i++;
+
+            continue;
         }
+
+
+        /*
+        MULTI SYMBOL
+        */
+
+        const two =
+            code.substring(
+                i,
+                i + 2
+            );
+
+        const three =
+            code.substring(
+                i,
+                i + 3
+            );
+
+        if(
+            three === "..." ||
+            three === "//="
+        ){
+
+            tokens.push({
+                type:"symbol",
+                value:three
+            });
+
+            i += 3;
+
+            continue;
+        }
+
+        if(
+            [
+                "==",
+                "~=",
+                "<=",
+                ">=",
+                "..",
+                "+=",
+                "-=",
+                "*=",
+                "/=",
+                "%=",
+                "^="
+            ].includes(two)
+        ){
+
+            tokens.push({
+                type:"symbol",
+                value:two
+            });
+
+            i += 2;
+
+            continue;
+        }
+
+
+        /*
+        IDENTIFIER / NUMBER
+        */
+
+        if(
+            /[A-Za-z0-9_]/.test(char)
+        ){
+
+            let start = i;
+
+            while(
+                i < code.length &&
+                /[A-Za-z0-9_.]/.test(code[i])
+            ){
+
+                i++;
+
+            }
+
+            tokens.push({
+                type:"word",
+                value:
+                    code.substring(
+                        start,
+                        i
+                    )
+            });
+
+            continue;
+        }
+
+
+        /*
+        SYMBOL
+        */
+
+        tokens.push({
+            type:"symbol",
+            value:char
+        });
+
+        i++;
+
     }
 
-    codeBox.value = output.join("\n");
-
-    statusBox.textContent =
-        "Beautify selesai • " +
-        output.length +
-        " baris";
-
+    return tokens;
 }
 
 
-/* =========================
-   ANALYZER
-========================= */
+/*
+==================================================
+ FORMAT
+==================================================
+*/
 
-function analyze(){
+function formatCode(){
 
-    const code = codeBox.value;
+    const code =
+        input.value;
 
     if(!code.trim()){
-        alert("Masukkan script Lua terlebih dahulu.");
+
+        alert(
+            "Masukkan atau upload script Lua terlebih dahulu."
+        );
+
         return;
     }
 
-    let found = [];
 
-    function detect(label,regex,description){
-
-        const match = code.match(regex);
-
-        if(match){
-            found.push({
-                label,
-                count:match.length,
-                description
-            });
-        }
-
-    }
-
-    detect(
-        "string.byte",
-        /\bstring\s*\.\s*byte\b/g,
-        "Membaca nilai byte dari string."
-    );
-
-    detect(
-        "string.char",
-        /\bstring\s*\.\s*char\b/g,
-        "Membuat karakter dari nilai byte."
-    );
-
-    detect(
-        "string.sub",
-        /\bstring\s*\.\s*sub\b/g,
-        "Mengambil potongan string."
-    );
-
-    detect(
-        "table.concat",
-        /\btable\s*\.\s*concat\b/g,
-        "Menggabungkan isi table menjadi string."
-    );
-
-    detect(
-        "table.insert",
-        /\btable\s*\.\s*insert\b/g,
-        "Memasukkan data ke dalam table."
-    );
-
-    detect(
-        "loadstring",
-        /\bloadstring\b/g,
-        "Memuat string sebagai kode Lua."
-    );
-
-    detect(
-        "load",
-        /\bload\s*\(/g,
-        "Memuat kode Lua dari string."
-    );
-
-    detect(
-        "require",
-        /\brequire\s*\(/g,
-        "Memanggil ModuleScript/module."
-    );
-
-    detect(
-        "getfenv",
-        /\bgetfenv\b/g,
-        "Mengakses environment function."
-    );
-
-    detect(
-        "setfenv",
-        /\bsetfenv\b/g,
-        "Mengubah environment function."
-    );
-
-    detect(
-        "hex escape",
-        /\\x[0-9a-fA-F]{2}/g,
-        "Ditemukan karakter escape hexadecimal."
-    );
-
-    detect(
-        "decimal escape",
-        /\\[0-9]{2,3}/g,
-        "Ditemukan escape angka."
-    );
-
-    detect(
-        "very long string",
-        /["'][^"'\n]{300,}["']/g,
-        "Ada string sangat panjang yang dapat berisi data ter-encode."
-    );
-
-    detect(
-        "byte loop",
-        /for\s+\w+\s*=\s*0x?0+\s*,\s*0x?FF/i,
-        "Ada loop yang berjalan pada rentang byte 0–255."
-    );
+    const tokens =
+        tokenizeLua(code);
 
 
-    /* =========================
-       REPORT
-    ========================= */
+    let lines = [];
 
-    let html = "";
+    let current = "";
 
-    html +=
-        "Detected patterns: " +
-        found.length +
-        "\n\n";
+    let indent = 0;
 
-    if(found.length === 0){
 
-        html +=
-        "Tidak ditemukan pola decoder umum.\n";
+    function add(text){
+
+        current += text;
 
     }
-    else{
 
-        for(const item of found){
 
-            html +=
-            "[" + item.label + "] " +
-            item.count +
-            " occurrence(s)\n" +
-            "  → " +
-            item.description +
-            "\n\n";
+    function space(){
+
+        if(
+            current.length > 0 &&
+            !current.endsWith(" ")
+        ){
+
+            current += " ";
 
         }
 
     }
 
 
-    /* =========================
-       SIMPLE STRUCTURE
-    ========================= */
+    function flush(){
 
-    const functions =
-        (code.match(/\bfunction\b/g)||[]).length;
+        const clean =
+            current.trim();
 
-    const locals =
-        (code.match(/\blocal\b/g)||[]).length;
+        if(clean){
 
-    const strings =
-        (code.match(/(["'])/g)||[]).length / 2;
+            lines.push(
+                "    ".repeat(
+                    Math.max(0,indent)
+                ) + clean
+            );
 
-    const lines =
-        code.split("\n").length;
+        }
 
-    html += "-------------------------\n";
-    html += "STRUCTURE\n";
-    html += "-------------------------\n";
-    html += "Lines      : " + lines + "\n";
-    html += "Functions  : " + functions + "\n";
-    html += "Local vars : " + locals + "\n";
-    html += "Strings    : " + Math.floor(strings) + "\n\n";
-
-
-    /* =========================
-       POSSIBLE LOADER
-    ========================= */
-
-    const loader =
-        /\b(loadstring|load)\s*\(/.test(code);
-
-    if(loader){
-
-        html +=
-        "⚠ POSSIBLE CODE LOADER\n" +
-        "Script menggunakan load/loadstring.\n" +
-        "Periksa bagian yang menghasilkan string sebelum fungsi tersebut dipanggil.\n\n";
+        current = "";
 
     }
 
 
-    /* =========================
-       DECODER EXPLANATION
-    ========================= */
+    /*
+    BLOCK OPENERS
+    */
 
-    const decoder =
-        /string\s*\.\s*(byte|char|sub)/.test(code) &&
-        /table\s*\.\s*concat/.test(code);
+    const blockWords = [
+        "function",
+        "then",
+        "do",
+        "repeat"
+    ];
 
-    if(decoder){
 
-        html +=
-        "ℹ POSSIBLE STRING DECODER\n" +
-        "Kombinasi string.byte/string.sub/string.char " +
-        "dengan table.concat sering digunakan untuk mengubah " +
-        "data string menjadi bentuk lain.\n\n";
+    /*
+    BLOCK CLOSERS
+    */
+
+    const closeWords = [
+        "end",
+        "until"
+    ];
+
+
+    /*
+    ELSE
+    */
+
+    const middleWords = [
+        "else",
+        "elseif"
+    ];
+
+
+    let previous = null;
+
+
+    for(let n = 0; n < tokens.length; n++){
+
+        const token =
+            tokens[n];
+
+        const value =
+            token.value;
+
+
+        /*
+        COMMENT
+        */
+
+        if(
+            token.type === "comment"
+        ){
+
+            flush();
+
+            lines.push(
+                "    ".repeat(
+                    Math.max(0,indent)
+                ) + value
+            );
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        CLOSER
+        */
+
+        if(
+            closeWords.includes(
+                value
+            )
+        ){
+
+            flush();
+
+            indent =
+                Math.max(
+                    0,
+                    indent - 1
+                );
+
+            add(value);
+
+            /*
+            until condition
+            */
+
+            if(
+                value === "until"
+            ){
+
+                space();
+
+            }
+            else{
+
+                flush();
+
+            }
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        ELSE / ELSEIF
+        */
+
+        if(
+            middleWords.includes(
+                value
+            )
+        ){
+
+            flush();
+
+            indent =
+                Math.max(
+                    0,
+                    indent - 1
+                );
+
+            add(value);
+
+            if(
+                value === "elseif"
+            ){
+
+                space();
+
+            }
+            else{
+
+                flush();
+
+            }
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        STRING
+        */
+
+        if(
+            token.type === "string"
+        ){
+
+            if(
+                current &&
+                !current.endsWith(" ")
+            ){
+
+                space();
+
+            }
+
+            add(value);
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        COMMA
+        */
+
+        if(value === ","){
+
+            current =
+                current.trimEnd();
+
+            add(", ");
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        SEMICOLON
+        */
+
+        if(value === ";"){
+
+            current =
+                current.trimEnd();
+
+            flush();
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        OPEN PAREN
+        */
+
+        if(value === "("){
+
+            current =
+                current.trimEnd();
+
+            add("(");
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        CLOSE PAREN
+        */
+
+        if(value === ")"){
+
+            current =
+                current.trimEnd();
+
+            add(")");
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        OPEN BRACKET
+        */
+
+        if(value === "["){
+
+            current =
+                current.trimEnd();
+
+            add("[");
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        CLOSE BRACKET
+        */
+
+        if(value === "]"){
+
+            current =
+                current.trimEnd();
+
+            add("]");
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        DOT
+        */
+
+        if(value === "."){
+
+            current =
+                current.trimEnd();
+
+            add(".");
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        COLON
+        */
+
+        if(value === ":"){
+
+            current =
+                current.trimEnd();
+
+            add(":");
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        OPERATORS
+        */
+
+        if(
+            [
+                "=",
+                "==",
+                "~=",
+                "<",
+                ">",
+                "<=",
+                ">=",
+                "+",
+                "-",
+                "*",
+                "/",
+                "%",
+                "^",
+                "..",
+                "+=",
+                "-=",
+                "*=",
+                "/="
+            ].includes(value)
+        ){
+
+            current =
+                current.trimEnd();
+
+            add(
+                " " +
+                value +
+                " "
+            );
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        BLOCK OPEN
+        */
+
+        if(
+            blockWords.includes(
+                value
+            )
+        ){
+
+            space();
+
+            add(value);
+
+            /*
+            function:
+            hanya tambah indent setelah
+            baris function selesai.
+
+            then / do:
+            juga tambah indent.
+            */
+
+            if(
+                value === "function"
+            ){
+
+                space();
+
+            }
+            else{
+
+                flush();
+
+                indent++;
+
+            }
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        NORMAL WORD
+        */
+
+        if(
+            token.type === "word"
+        ){
+
+            /*
+            Jika setelah function:
+            */
+
+            if(
+                previous &&
+                previous.value === "function"
+            ){
+
+                add(value);
+
+            }
+            else{
+
+                if(
+                    current &&
+                    !current.endsWith(" ") &&
+                    !current.endsWith("(") &&
+                    !current.endsWith("[") &&
+                    !current.endsWith(".")
+                ){
+
+                    space();
+
+                }
+
+                add(value);
+
+            }
+
+            previous = token;
+
+            continue;
+        }
+
+
+        /*
+        DEFAULT SYMBOL
+        */
+
+        if(
+            current &&
+            !current.endsWith(" ")
+        ){
+
+            space();
+
+        }
+
+        add(value);
+
+        previous = token;
 
     }
 
 
-    result.textContent = html;
+    flush();
 
-    statusBox.textContent =
-        "Analysis selesai • " +
-        found.length +
-        " pola terdeteksi";
+
+    /*
+    ==============================================
+    SECOND PASS
+    ==============================================
+    */
+
+
+    let finalLines = [];
+
+    for(let line of lines){
+
+        line =
+            line.replace(
+                /[ \t]+$/g,
+                ""
+            );
+
+        /*
+        Rapikan function declaration
+        */
+
+        line =
+            line.replace(
+                /\bfunction\s+([A-Za-z_][A-Za-z0-9_.:]*)\s*\(/g,
+                "function $1("
+            );
+
+        /*
+        Rapikan if/for/while
+        */
+
+        line =
+            line.replace(
+                /\s+(then|do)\s*$/,
+                " $1"
+            );
+
+        /*
+        Jangan ada spasi berlebihan
+        */
+
+        line =
+            line.replace(
+                / {2,}/g,
+                " "
+            );
+
+        /*
+        Kembalikan indent
+        */
+
+        const match =
+            line.match(/^(\s*)/);
+
+        const existingIndent =
+            match ? match[1] : "";
+
+        const content =
+            line.trim();
+
+        finalLines.push(
+            existingIndent +
+            content
+        );
+
+    }
+
+
+    output.value =
+        finalLines.join("\n");
 
 }
 
 
-/* =========================
-   DOWNLOAD
-========================= */
+/*
+==================================================
+ COPY
+==================================================
+*/
+
+async function copyOutput(){
+
+    if(!output.value){
+
+        alert(
+            "Belum ada hasil beautify."
+        );
+
+        return;
+    }
+
+    try{
+
+        await navigator.clipboard.writeText(
+            output.value
+        );
+
+        alert(
+            "Hasil berhasil dicopy."
+        );
+
+    }
+    catch{
+
+        output.select();
+
+        document.execCommand("copy");
+
+        alert(
+            "Hasil berhasil dicopy."
+        );
+
+    }
+
+}
+
+
+/*
+==================================================
+ DOWNLOAD
+==================================================
+*/
 
 function downloadLua(){
 
-    const code = codeBox.value;
+    if(!output.value){
 
-    if(!code.trim()){
-        alert("Tidak ada kode untuk didownload.");
+        alert(
+            "Beautify script terlebih dahulu."
+        );
+
         return;
     }
 
     const blob =
-        new Blob([code],{
-            type:"text/plain"
-        });
+        new Blob(
+            [output.value],
+            {
+                type:"text/plain"
+            }
+        );
 
     const url =
         URL.createObjectURL(blob);
 
-    const a =
+    const link =
         document.createElement("a");
 
-    a.href = url;
-    a.download = "deobfuscated.lua";
+    link.href = url;
 
-    document.body.appendChild(a);
-    a.click();
+    link.download =
+        "beautified.lua";
 
-    a.remove();
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
 
 }
 
 
-/* =========================
-   CLEAR
-========================= */
+/*
+==================================================
+ CLEAR
+==================================================
+*/
 
-function clearAll(){
+function clearCode(){
 
-    codeBox.value = "";
+    input.value = "";
 
-    result.textContent = "";
-
-    statusBox.textContent =
-        "Belum ada analisis.";
+    output.value = "";
 
     fileInput.value = "";
 
 }
+
 </script>
 
 </body>
